@@ -118,15 +118,21 @@ def draw_board(player1_tiles, player2_tiles, board_tiles):
 
     pygame.draw.rect(screen, BLACK, (0, 660, 1000, 5))
 
-
     # Draw the tiles on the board
     for i, tile in enumerate(board_tiles):
-        pygame.draw.rect(screen, BLACK, (30+i*60, 260, 50, 100), 2)
-        text = font.render(str(tile[0])+'-'+str(tile[1]), True, BLACK)
-        screen.blit(text, (35+i*60, 275))
+        if i > 15:
+            pygame.draw.rect(screen, BLACK, (30+(i-15)*60, 370, 50, 100), 2)
+            text = font.render(str(tile[0])+'-'+str(tile[1]), True, BLACK)
+            screen.blit(text, (35+(i-14)*60, 385))
+        elif i > 30:
+            pygame.draw.rect(screen, BLACK, (30+(i-30)*60, 480, 50, 100), 2)
+            text = font.render(str(tile[0])+'-'+str(tile[1]), True, BLACK)
+            screen.blit(text, (35+(i-29)*60, 495))
+        else:
+            pygame.draw.rect(screen, BLACK, (30+i*60, 260, 50, 100), 2)
+            text = font.render(str(tile[0])+'-'+str(tile[1]), True, BLACK)
+            screen.blit(text, (35+i*60, 275))
     
-
-
     # Draw the player 1's tiles
     for i, tile in enumerate(player1_tiles):
         pygame.draw.rect(screen, BLACK, (15+i*60, 680, 50, 100), 2)

@@ -53,10 +53,63 @@ def choose_menu():
                 sqx2 = (pos[0] - 750)**2
                 sqy2 = (pos[1] - 600)**2
                 if math.sqrt(sqx1 + sqy1) < 150: 
+                    draw_host_game()
+                    choose_number_players()
                     choose_made = True
                 elif math.sqrt(sqx2 + sqy2) < 150:
                     choose_made = True
 
+def draw_host_game():
+    # Clear the screen
+    screen.fill(WHITE)
+    # Draw the board
+
+    pygame.draw.rect(screen, BLACK, (500, 0, 500, 1000))
+
+    pygame.draw.circle(screen, WHITE, (750, 200), 30)
+    pygame.draw.circle(screen, WHITE, (750, 300), 30)
+    pygame.draw.circle(screen, WHITE, (750, 400), 30)
+    pygame.draw.circle(screen, WHITE, (750, 500), 30)
+
+    text1 = font.render("Choix du nombre de joueurs", True, BLACK)
+    text2 = font.render("1", True, BLACK)
+    text3 = font.render("2", True, BLACK)
+    text4 = font.render("3", True, BLACK)
+    text5 = font.render("4", True, BLACK)
+
+    screen.blit(text1, (100, 350))
+    screen.blit(text2, (745, 185))
+    screen.blit(text3, (745, 285))
+    screen.blit(text4, (745, 385))
+    screen.blit(text5, (745, 485))
+    
+    pygame.display.update()
+
+def choose_number_players():
+    choose_made = False
+    while not choose_made:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            elif event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                sqx1 = (pos[0] - 750)**2
+                sqy1 = (pos[1] - 200)**2
+                sqx2 = (pos[0] - 750)**2
+                sqy2 = (pos[1] - 400)**2
+                sqx3 = (pos[0] - 750)**2
+                sqy3 = (pos[1] - 600)**2
+                sqx4 = (pos[0] - 750)**2
+                sqy4 = (pos[1] - 800)**2
+                if math.sqrt(sqx1 + sqy1) < 30: 
+                    choose_made = True
+                elif math.sqrt(sqx2 + sqy2) < 30:
+                    choose_made = True
+                elif math.sqrt(sqx3 + sqy3) < 30:
+                    choose_made = True
+                elif math.sqrt(sqx4 + sqy4) < 30:
+                    choose_made = True
 
 # Function to draw the board and tiles
 def draw_board(player1_tiles, player2_tiles, board_tiles):

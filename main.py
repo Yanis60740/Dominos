@@ -1,7 +1,11 @@
-import pygame, random, math
+import pygame, random, math, socket
 
 # Initialize Pygame
 pygame.init()
+
+# Initialisation de la connexion
+HOST = 'localhost'
+PORT = 5000
 
 # Set the screen size
 SCREEN_WIDTH = 1000
@@ -19,6 +23,45 @@ RED = (255, 0, 0)
 
 # Set the font
 font = pygame.font.SysFont('Calibri', 25, True, False)
+
+# Function to create the initial set of tiles
+def create_tiles():
+    tiles = []
+    for i in range(7):
+        for j in range(i, 7):
+            tiles.append((i, j))
+    return tiles
+
+# Function to shuffle the tiles
+def shuffle_tiles(tiles):
+    random.shuffle(tiles)
+    return tiles
+
+# Create the tiles and shuffle them
+
+tiles = create_tiles()
+tiles = shuffle_tiles(tiles)
+
+# Deal the tiles to the players
+player1_tiles = []
+player2_tiles = []
+player3_tiles = []
+player4_tiles = [] 
+computer_tiles = []
+
+# Set up the board tiles
+board_tiles = []
+
+# Set up the players' scores
+player1_score = 0
+player2_score = 0
+player3_score = 0
+player4_score = 0
+computer_score = 0
+
+turn=0
+
+menu_done = False
 
 # Function to draw the game menu
 def draw_menu():
@@ -53,13 +96,12 @@ def choose_menu():
                 sqx2 = (pos[0] - 750)**2
                 sqy2 = (pos[1] - 600)**2
                 if math.sqrt(sqx1 + sqy1) < 150: 
-                    draw_host_game()
-                    choose_number_players()
-                    choose_made = True
+                    draw_host_menu()
+                    return choose_number_players()
                 elif math.sqrt(sqx2 + sqy2) < 150:
                     choose_made = True
 
-def draw_host_game():
+def draw_host_menu():
     # Clear the screen
     screen.fill(WHITE)
     # Draw the board
@@ -86,8 +128,7 @@ def draw_host_game():
     pygame.display.update()
 
 def choose_number_players():
-    choose_made = False
-    while not choose_made:
+    while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -103,13 +144,73 @@ def choose_number_players():
                 sqx4 = (pos[0] - 750)**2
                 sqy4 = (pos[1] - 800)**2
                 if math.sqrt(sqx1 + sqy1) < 30: 
-                    choose_made = True
-                elif math.sqrt(sqx2 + sqy2) < 30:
-                    choose_made = True
-                elif math.sqrt(sqx3 + sqy3) < 30:
-                    choose_made = True
-                elif math.sqrt(sqx4 + sqy4) < 30:
-                    choose_made = True
+                    deal_tiles(1)
+                    return 1
+                # elif math.sqrt(sqx2 + sqy2) < 30:
+                #     connexion(2)
+                #     deal_tiles(2)
+                #     return 2
+                # elif math.sqrt(sqx3 + sqy3) < 30:
+                #     connexion(3)
+                #     deal_tiles(3)
+                #     return 3
+                # elif math.sqrt(sqx4 + sqy4) < 30:
+                #     connexion(4)
+                #     deal_tiles(4)
+                #     return 4
+
+# def connexion(nb_joueurs):
+#     waiting_screen()
+#     # server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#     # server_socket.bind((HOST, PORT))
+#     # server_socket.listen()
+#     # print('Attente de connexion des joueurs...')
+#     # player1, address1 = server_socket.accept()
+#     # print('Joueur 1 connecté:', address1)
+#     # player1.send('Vous êtes le joueur 1'.encode())
+
+#     # player2, address2 = server_socket.accept()
+#     # print('Joueur 2 connecté:', address2)
+#     # player2.send('Vous êtes le joueur 2'.encode())
+
+# def waiting_screen():
+#     screen.fill(WHITE)
+#     # Draw the board
+
+#     pygame.draw.rect(screen, BLACK, (500, 0, 500, 1000))
+
+#     text1 = font.render("Choix du nombre de joueurs", True, BLACK)
+
+#     screen.blit(text1, (340, 400))
+    
+#     pygame.display.update()
+
+def deal_tiles(nb_players):
+    global player1_tiles, computer_tiles, tiles
+    
+    if nb_players == 1:
+        player1_tiles = tiles[:7]
+        computer_tiles = tiles[7:14]
+        tiles = tiles[14:]
+        # return player1_tiles, computer_tiles, tiles
+    elif nb_players == 2:
+        player1_tiles = tiles[:7]
+        player2_tiles = tiles[7:14]
+        tiles = tiles[14:]
+        # return player1_tiles, player2_tiles, tiles
+    elif nb_players == 3:
+        player1_tiles = tiles[:7]
+        player2_tiles = tiles[7:14]
+        player3_tiles = tiles[14:21]
+        tiles = tiles[21:]
+        # return player1_tiles, player2_tiles, player3_tiles, tiles
+    elif nb_players == 4:
+        player1_tiles = tiles[:7]
+        player2_tiles = tiles[7:14]
+        player3_tiles = tiles[14:21]
+        player3_tiles = tiles[21:28]
+        tiles = tiles[28:]
+        # return player1_tiles, player2_tiles, player3_tiles, player4_tiles, tiles
 
 # Function to draw the board and tiles
 def draw_board(player1_tiles, player2_tiles, board_tiles):
@@ -121,17 +222,17 @@ def draw_board(player1_tiles, player2_tiles, board_tiles):
     # Draw the tiles on the board
     for i, tile in enumerate(board_tiles):
         if i > 15:
-            pygame.draw.rect(screen, BLACK, (30+(i-15)*60, 370, 50, 100), 2)
+            pygame.draw.rect(screen, BLACK, (30+(i-16)*60, 370, 50, 100), 2)
             text = font.render(str(tile[0])+'-'+str(tile[1]), True, BLACK)
-            screen.blit(text, (35+(i-14)*60, 385))
+            screen.blit(text, (31+(i-16)*60, 385))
         elif i > 30:
-            pygame.draw.rect(screen, BLACK, (30+(i-30)*60, 480, 50, 100), 2)
+            pygame.draw.rect(screen, BLACK, (30+(i-31)*60, 480, 50, 100), 2)
             text = font.render(str(tile[0])+'-'+str(tile[1]), True, BLACK)
-            screen.blit(text, (35+(i-29)*60, 495))
+            screen.blit(text, (31+(i-31)*60, 495))
         else:
             pygame.draw.rect(screen, BLACK, (30+i*60, 260, 50, 100), 2)
             text = font.render(str(tile[0])+'-'+str(tile[1]), True, BLACK)
-            screen.blit(text, (35+i*60, 275))
+            screen.blit(text, (31+i*60, 275))
     
     # Draw the player 1's tiles
     for i, tile in enumerate(player1_tiles):
@@ -150,27 +251,6 @@ def draw_board(player1_tiles, player2_tiles, board_tiles):
     
 
 
-# Function to create the initial set of tiles
-def create_tiles():
-    tiles = []
-    for i in range(7):
-        for j in range(i, 7):
-            tiles.append((i, j))
-    return tiles
-
-# Function to shuffle the tiles
-def shuffle_tiles(tiles):
-    random.shuffle(tiles)
-    return tiles
-
-# Function to deal the tiles to the players
-def deal_tiles(tiles):
-    player1_tiles = []
-    player2_tiles = []
-    for i in range(7):
-        player1_tiles.append(tiles.pop())
-        player2_tiles.append(tiles.pop())
-    return player1_tiles, player2_tiles, tiles
 
 # Function to determine the winner
 def determine_winner(player1_tiles, player2_tiles):
@@ -207,7 +287,7 @@ def get_player_move(player_tiles, board_tiles):
     print("PLAYER 1 valid moves:",valid_moves)
     move_made = False
     if len(valid_moves)==0 and len(tiles) > 0:
-        player1_draw(player1_tiles ,board_tiles)
+        player1_draw(player1_tiles)
     elif len(valid_moves)>0 and len(player1_tiles) > 0:
         while not move_made:
             for event in pygame.event.get():
@@ -268,7 +348,7 @@ def get_computer_move(computer_tiles, board_tiles):
     draw_board(player1_tiles, player2_tiles, board_tiles)
     print("end computer turn")
     
-def player1_draw(player1_tiles ,board_tiles):
+def player1_draw(player1_tiles):
     # Player can't make a move, draw from the pile
     print("len tiles:",len(tiles))
     if len(tiles) > 0:
@@ -295,27 +375,11 @@ def player2_draw(player2_tiles, board_tiles):
             player2_tiles.append(tiles.pop())
 
 
-# Create the tiles and shuffle them
-tiles = create_tiles()
-tiles = shuffle_tiles(tiles)
-
-# Deal the tiles to the players
-player1_tiles = tiles[:7]
-player2_tiles = tiles[7:14]
-
-# Remove the dealt tiles from the tiles list
-tiles = tiles[14:]
-
-# Set up the board tiles
-board_tiles = []
-
-# Set up the players' scores
-player1_score = 0
-player2_score = 0
-
-turn=0
-
-menu_done = False
+def random_turn(nb_players):
+    if nb_players == 1:
+        return random.randint(0, 1)
+    else:
+        return random.randint(nb_players-nb_players+1, nb_players)
 
 # Main game loop
 while True:
@@ -327,31 +391,37 @@ while True:
     # Menu
     while not menu_done:
         draw_menu()
-        choose_menu()
+        nb_players = choose_menu()
+        turn = random_turn(nb_players)
         menu_done = True
 
+    print(turn)
     # Player 1's turn
-    if len(player1_tiles) > 0 and turn == 0:
-        turn=1
-        draw_board(player1_tiles, player2_tiles, board_tiles)
+    if len(player1_tiles) > 0 and turn == 1:
+        if nb_players == 1:
+            turn = 0
+        else:
+            turn = 2
+        draw_board(player1_tiles, computer_tiles, board_tiles)
         get_player_move(player1_tiles, board_tiles)
         if len(player1_tiles) == 0:
             player1_score = sum([tile[0]+tile[1] for tile in player1_tiles])
 
-    # Player 2's turn
-    elif len(player2_tiles) > 0 and turn == 1:
+    # Computer's turn
+    elif len(computer_tiles) > 0 and turn == 0:
         print("tour du joueur 2 ...")
+        
+        turn=1
+        draw_board(player1_tiles, computer_tiles, board_tiles)
         pygame.time.wait(1000)
-        turn=0
-        draw_board(player1_tiles, player2_tiles, board_tiles)
-        get_computer_move(player2_tiles, board_tiles)
-        if len(player2_tiles) == 0:
-            player2_score = sum([tile[0]+tile[1] for tile in player2_tiles])
+        get_computer_move(computer_tiles, board_tiles)
+        if len(computer_tiles) == 0:
+            computer_score = sum([tile[0]+tile[1] for tile in computer_tiles])
 
     # Game over
     else:
-        draw_board(player1_tiles, player2_tiles, board_tiles)
-        winner = determine_winner(player1_tiles, player2_tiles)
+        draw_board(player1_tiles, computer_tiles, board_tiles)
+        winner = determine_winner(player1_tiles, computer_tiles)
         print(winner)
         pygame.time.wait(3000)
         pygame.quit()
@@ -360,8 +430,8 @@ while True:
     # Determine if the game is over
     if len(tiles) == 0 and len(board_tiles) == 0:
         # Game over
-        draw_board(player1_tiles, player2_tiles, board_tiles)
-        winner = determine_winner(player1_tiles, player2_tiles)
+        draw_board(player1_tiles, computer_tiles, board_tiles)
+        winner = determine_winner(player1_tiles, computer_tiles)
         print(winner)
         pygame.time.wait(5000)
         pygame.quit()
